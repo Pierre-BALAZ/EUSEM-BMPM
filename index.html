@@ -404,5 +404,5 @@ function guessExt(t){t=t||'';if(t.includes('png'))return '.png';if(t.includes('p
 renderScan();renderBillet();
 show('home');
 </script>
-<script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}</script>
+<script>if('serviceWorker' in navigator){var __hadCtrl=!!navigator.serviceWorker.controller, __reloaded=false;addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(r){r.update();setInterval(function(){r.update();},60000);}).catch(function(){});});navigator.serviceWorker.addEventListener('controllerchange',function(){if(__hadCtrl&&!__reloaded){__reloaded=true;location.reload();}});}</script>
 </body></html>
