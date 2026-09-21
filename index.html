@@ -96,15 +96,15 @@
  textarea{width:100%;min-height:52vh;border:1px solid var(--line);border-radius:13px;padding:14px;font:16px/1.55 inherit;resize:vertical;background:#fff;color:var(--tx)}
  .save-ind{font-size:.8rem;color:var(--muted);margin-top:8px}
  /* archive gallery */
- .ag{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
- .ai{background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden;box-shadow:var(--shadow)}
- .ai .th{width:100%;height:120px;object-fit:cover;display:block;background:#eef2f7;cursor:pointer}
- .ai .meta{padding:8px 10px}
- .ai .nm{font-weight:600;font-size:.82rem;word-break:break-word}
- .ai .dt{font-size:.68rem;color:var(--muted)}
- .ai .acts{display:flex;gap:6px;padding:0 10px 10px}
- .ai .acts button{flex:1;border:1px solid var(--line);background:#f5f8fc;border-radius:8px;padding:6px;font-size:.72rem;cursor:pointer;color:var(--blue)}
- .ai .acts button.del{color:var(--red)}
+ .ag{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+ .ai{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:10px;box-shadow:var(--shadow)}
+ .ai .th{width:72px;height:72px;object-fit:cover;border-radius:10px;flex:0 0 auto;background:#eef2f7;cursor:pointer}
+ .ai .body{flex:1;min-width:0}
+ .ai .nm{font-weight:700;font-size:.9rem;word-break:break-word}
+ .ai .dt{font-size:.7rem;color:var(--muted);margin-bottom:7px}
+ .ai .acts{display:flex;gap:6px;flex-wrap:wrap}
+ .ai .acts button{border:1px solid var(--line);background:#f5f8fc;border-radius:9px;padding:7px 11px;font-size:.78rem;cursor:pointer;color:var(--blue);font-weight:600}
+ .ai .acts button.del{color:#fff;background:var(--red);border-color:var(--red)}
  .empty{color:var(--muted);text-align:center;padding:26px 10px;font-size:.9rem}
  /* fullscreen viewer */
  .fs{position:fixed;inset:0;z-index:60;background:#0b1420;display:none;flex-direction:column}
@@ -408,7 +408,7 @@ $('#shSave').onclick=async()=>{if(!pendingScan)return;pendingScan.name=($('#shNa
  await putItem('scan',pendingScan);$('#sheet').classList.remove('on');pendingScan=null;renderScan();};
 async function renderScan(){const items=(await allItems('scan')).sort((a,b)=>b.id.localeCompare(a.id));
  $('#scanEmpty').classList.toggle('hidden',items.length>0);
- $('#scanGallery').innerHTML=items.map(it=>`<div class="ai"><img class="th" src="${it.data}" data-open="${it.id}"><div class="meta"><div class="nm">${esc(it.name)}</div><div class="dt">${it.date}</div></div><div class="acts"><button data-dl="${it.id}">Exporter</button><button data-rn="${it.id}">Renommer</button><button class="del" data-rm="${it.id}">🗑 Supprimer</button></div></div>`).join('');
+ $('#scanGallery').innerHTML=items.map(it=>`<div class="ai"><img class="th" src="${it.data}" data-open="${it.id}"><div class="body"><div class="nm">${esc(it.name)}</div><div class="dt">${it.date}</div><div class="acts"><button data-dl="${it.id}">⬇︎ Exporter</button><button data-rn="${it.id}">✎ Renommer</button><button class="del" data-rm="${it.id}">🗑 Supprimer</button></div></div></div>`).join('');
  window._scan=items;}
 $('#scanGallery').addEventListener('click',async e=>{const b=e.target;const items=window._scan||[];const find=id=>items.find(x=>x.id===id);
  if(b.dataset.open){const it=find(b.dataset.open);if(it)openGallery(it.name,[it.data]);}
@@ -423,7 +423,8 @@ $('#billetInput').addEventListener('change',async e=>{const f=e.target.files[0];
 async function renderBillet(){const items=(await allItems('billet')).sort((a,b)=>b.id.localeCompare(a.id));
  $('#billetEmpty').classList.toggle('hidden',items.length>0);
  $('#billetGallery').innerHTML=items.map(it=>{const isPdf=(it.type||'').includes('pdf');
-   return `<div class="ai"><div class="th" data-open="${it.id}" style="display:flex;align-items:center;justify-content:center;font-size:2.4rem">${isPdf?'📄':`<img class="th" src="${it.data}" style="height:120px">`}</div><div class="meta"><div class="nm">${esc(it.name)}</div><div class="dt">${it.date}</div></div><div class="acts"><button data-dlb="${it.id}">Exporter</button><button class="del" data-rmb="${it.id}">Suppr.</button></div></div>`;}).join('');
+   const thumb=isPdf?`<div class="th" data-open="${it.id}" style="display:flex;align-items:center;justify-content:center;font-size:2rem">📄</div>`:`<img class="th" src="${it.data}" data-open="${it.id}">`;
+   return `<div class="ai">${thumb}<div class="body"><div class="nm">${esc(it.name)}</div><div class="dt">${it.date}</div><div class="acts"><button data-dlb="${it.id}">⬇︎ Exporter</button><button class="del" data-rmb="${it.id}">🗑 Supprimer</button></div></div></div>`;}).join('');
  window._billet=items;}
 $('#billetGallery').addEventListener('click',async e=>{const b=e.target.closest('[data-open],[data-dlb],[data-rmb]');if(!b)return;const items=window._billet||[];const find=id=>items.find(x=>x.id===id);
  if(b.dataset.open){const it=find(b.dataset.open);if(it){if((it.type||'').includes('pdf')){const w=window.open();if(w)w.location=it.data;}else openGallery(it.name,[it.data]);}}
